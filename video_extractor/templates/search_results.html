@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results for "{{ query }}"</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #007bff;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+
+        video {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 0 auto 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        li:hover {
+            background-color: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        a {
+            text-decoration: none;
+            color: #007bff;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Search Results for "{{ query }}"</h1>
+
+        <video id="video-player" controls>
+            <source src="{{ video.video_file.url }}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+
+        <ul>
+            {% for subtitle in subtitles %}
+            <li>
+                {{ subtitle.text }}
+                <a href="#" data-start-time="{{ subtitle.start_time }}">Play from {{ subtitle.start_time }}s</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const video = document.getElementById('video-player');
+
+            document.querySelectorAll('a[data-start-time]').forEach(function (link) {
+                link.addEventListener('click', function (event) {
+                    event.preventDefault();  // Prevent page reload
+                    const startTime = parseFloat(this.getAttribute('data-start-time'));
+
+                    if (!isNaN(startTime)) {
+                        video.currentTime = startTime;
+                        video.play();
+                    }
+                });
+            });
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const startTime = urlParams.get('start_time');
+
+            if (startTime && !isNaN(parseFloat(startTime))) {
+                video.currentTime = parseFloat(startTime);
+                video.play();
+            }
+        });
+    </script>
+
+</body>
+
+</html>
